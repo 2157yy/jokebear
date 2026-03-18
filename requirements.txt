@@ -1,0 +1,7 @@
+# 基础依赖
+torch>=2.0.0
+transformers>=4.35.0
+colorama>=0.4.6
+
+# 记忆层依赖
+neo4j>=5.15.0

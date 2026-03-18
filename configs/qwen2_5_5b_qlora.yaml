@@ -1,0 +1,47 @@
+%cd /content/LLaMA-Factory
+
+import yaml
+
+# 定义配置字典
+config = {
+    # 模型参数
+    "model_name_or_path": "Qwen/Qwen2-1.5B-Instruct",
+    "template": "qwen",
+    "finetuning_type": "lora",
+    
+    # 数据集
+    "dataset": "jokebear",
+    
+    # 训练参数 (针对 Colab T4 优化)
+    "output_dir": "./saves/jokebear_lora_final",
+    "per_device_train_batch_size": 2,
+    "gradient_accumulation_steps": 4,
+    "learning_rate": 2.0e-4,
+    "num_train_epochs": 3.0,
+    "lr_scheduler_type": "cosine",
+    "warmup_ratio": 0.1,
+    
+    # 显存与精度保护
+    "fp16": True,                # T4 必须开启 FP16
+    "pure_bf16": False,          # 严禁开启 BF16
+    "gradient_checkpointing": True,
+    
+    # 防卡死关键设置
+    "dataloader_num_workers": 0, # 单线程加载数据
+    "optim": "adamw_torch",      # 使用原生 PyTorch 优化器
+    
+    # 日志
+    "logging_steps": 5,
+    "save_steps": 100,
+    "report_to": "none",
+    
+    # 覆盖默认行为
+    "do_train": True,
+    "overwrite_output_dir": True
+}
+
+# 写入 yaml 文件
+with open("train_config.yaml", "w", encoding="utf-8") as f:
+    yaml.dump(config, f, sort_keys=False)
+
+print("配置文件 train_config.yaml 已生成！")

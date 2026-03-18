@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  neo4j:
+    image: neo4j:5.15
+    container_name: jokebear_neo4j
+    environment:
+      - NEO4J_AUTH=neo4j/jokebear2024
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    volumes:
+      - ./neo4j_data:/data
+      - ./neo4j_logs:/logs
+    deploy:
+      resources:
+        limits:
+          memory: 4G
