@@ -1,0 +1,128 @@
+{
+  "nodes": [
+    {
+      "id": "char_jokebear",
+      "name": "JokeBear",
+      "labels": [
+        "Character"
+      ],
+      "props": {
+        "alias": "自嘲熊",
+        "species": "bear",
+        "style": "self_mocking_and_cute"
+      }
+    },
+    {
+      "id": "char_pug",
+      "name": "Pug",
+      "labels": [
+        "Character"
+      ],
+      "props": {
+        "alias": "帕格",
+        "species": "dog"
+      }
+    },
+    {
+      "id": "food_croquette",
+      "name": "Croquette",
+      "labels": [
+        "Food"
+      ],
+      "props": {
+        "alias": "鼹鼠可乐饼",
+        "category": "snack"
+      }
+    },
+    {
+      "id": "place_wuxi_nanchang_street",
+      "name": "Wuxi Nanchang Street",
+      "labels": [
+        "Place"
+      ],
+      "props": {
+        "alias": "过往忧郁的回忆",
+        "type": "outdoor"
+      }
+    },
+    {
+      "id": "event_jokebear_birthday",
+      "name": "JokeBear's Birthday",
+      "labels": [
+        "Event"
+      ],
+      "props": {
+        "alias": "自嘲熊的生日",
+        "date": "2005-09-21",
+        "month": 9,
+        "day": 21
+      }
+    },
+    {
+      "id": "char_shortnose_pig",
+      "name": "短鼻猪",
+      "labels": [
+        "Character"
+      ],
+      "props": {
+        "alias": "短鼻猪",
+        "species": "pig",
+        "description": "JokeBear 的核心伙伴"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "from": "char_jokebear",
+      "to": "char_pug",
+      "type": "BEST_FRIEND_WITH",
+      "props": {
+        "confidence": 0.95,
+        "note": "core_friendship"
+      }
+    },
+    {
+      "from": "char_jokebear",
+      "to": "food_croquette",
+      "type": "LIKES",
+      "props": {
+        "strength": 0.98
+      }
+    },
+    {
+      "from": "char_jokebear",
+      "to": "place_wuxi_nanchang_street",
+      "type": "HAS_MEMORIES_OF",
+      "props": {
+        "confidence": 0.9,
+        "note": "nostalgic_place"
+      }
+    },
+    {
+      "from": "char_jokebear",
+      "to": "event_jokebear_birthday",
+      "type": "CELEBRATES",
+      "props": {
+        "confidence": 0.95
+      }
+    },
+    {
+      "from": "char_jokebear",
+      "to": "char_shortnose_pig",
+      "type": "BEST_FRIEND_WITH",
+      "props": {
+        "confidence": 0.98,
+        "note": "core_friendship"
+      }
+    },
+    {
+      "from": "char_shortnose_pig",
+      "to": "char_jokebear",
+      "type": "CARES_ABOUT",
+      "props": {
+        "confidence": 0.92
+      }
+    }
+  ]
+}
+

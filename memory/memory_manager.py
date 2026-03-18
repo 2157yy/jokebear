@@ -48,7 +48,10 @@ class MemoryManager:
         
         if extract_entities:
             # 提取实体
-            entities = self.entity_extractor.extract(conversation)
+            entities = self.entity_extractor.extract(
+                conversation,
+                use_local_model=True
+            )
             
             # 存储到图谱
             if entities:

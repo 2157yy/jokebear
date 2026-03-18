@@ -138,12 +138,12 @@ class JokeBearGraphStore:
                 # 获取用户喜欢的东西
                 result = session.run("""
                     MATCH (u:User {user_id: $user_id})-[r:LIKES]->(e)
-                    WHERE r.strength > 0.7
+                    WHERE COALESCE(r.strength, e.sentiment, 0) > 0.7
                     RETURN
                         labels(e)[0] as entity_type,
                         e.name as name,
-                        r.strength as preference_strength
-                    ORDER BY r.strength DESC
+                        COALESCE(r.strength, e.sentiment, 0) as preference_strength
+                    ORDER BY preference_strength DESC
                     LIMIT $limit
                 """, user_id=user_id, limit=limit)
             elif query_type == "emotional":

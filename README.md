@@ -59,3 +59,33 @@
 
  That’s all.
 
+## 三、手工定义小熊关系图（你自己定义关系内容）
+
+你只需要编辑这个文件：
+- `data_get/world_graph_manual.json`
+
+格式：
+- `nodes`: 你定义的角色/地点/物品
+- `relations`: 你定义的关系边（比如 `BEST_FRIEND_WITH`、`RIVAL_OF`）
+
+可选：先从模板复制一份再改（推荐）
+
+```bash
+cp data_get/world_graph_manual_template.json data_get/world_graph_manual.json
+```
+
+先做预检查（不写入数据库）：
+
+```bash
+python3 scripts/import_manual_graph.py --file data_get/world_graph_manual.json --dry-run
+```
+
+确认后正式导入：
+
+```bash
+python3 scripts/import_manual_graph.py --file data_get/world_graph_manual.json
+```
+
+注意：
+- 关系类型和标签建议使用大写英文与下划线（例如 `BEST_FRIEND_WITH`）。
+- 这个导入脚本会给手工节点自动加 `Entity` 和 `WorldEntity` 标签，便于和用户记忆区分。

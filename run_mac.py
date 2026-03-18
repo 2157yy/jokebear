@@ -19,7 +19,7 @@ NEO4J_USER = "neo4j"
 NEO4J_PASSWORD = "jokebear2024"
 
 # 用户 ID（可以改成你自己的 ID）
-USER_ID = "user_001"
+USER_ID = "doubleL"
 
 # 是否启用记忆功能
 ENABLE_MEMORY = True
@@ -143,9 +143,10 @@ def main():
         if memory_manager:
             try:
                 # 异步处理，不阻塞对话
-                full_conversation = f"用户：{query}\n小熊：{response}"
+                # 仅存储用户输入，避免把助手的思维标签写进记忆图谱
+                user_memory_input = query
                 memory_manager.process_conversation(
-                    full_conversation,
+                    user_memory_input,
                     conversation_id=f"conv_{session_id}_{len(conversation_history)//2}"
                 )
             except Exception as e:

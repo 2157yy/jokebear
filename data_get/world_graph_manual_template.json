@@ -1,0 +1,166 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "JokeBear 手工世界观图谱模板。你只需要修改 nodes 和 relations。",
+    "id_rule": "建议使用 小写类型前缀+下划线+英文名，例如 char_jokebear / place_tokyo / food_croquette",
+    "label_rule": "labels 建议用英文单词，首字母大写，例如 Character / Place / Food / Group / Topic"
+  },
+  "relation_type_catalog": [
+    {
+      "type": "BEST_FRIEND_WITH",
+      "from": "Character",
+      "to": "Character",
+      "meaning": "最亲密好友关系"
+    },
+    {
+      "type": "FRIEND_OF",
+      "from": "Character",
+      "to": "Character",
+      "meaning": "普通朋友关系"
+    },
+    {
+      "type": "KNOWS",
+      "from": "Character",
+      "to": "Character",
+      "meaning": "认识但不一定亲密"
+    },
+    {
+      "type": "RIVAL_OF",
+      "from": "Character",
+      "to": "Character",
+      "meaning": "竞争或互怼关系"
+    },
+    {
+      "type": "CARES_ABOUT",
+      "from": "Character",
+      "to": "Character",
+      "meaning": "在意、关心、保护关系"
+    },
+    {
+      "type": "LIKES",
+      "from": "Character",
+      "to": "Food|Topic|Activity",
+      "meaning": "偏好关系，可带 strength"
+    },
+    {
+      "type": "DISLIKES",
+      "from": "Character",
+      "to": "Food|Topic|Activity",
+      "meaning": "厌恶关系，可带 strength"
+    },
+    {
+      "type": "LIVES_IN",
+      "from": "Character",
+      "to": "Place",
+      "meaning": "居住关系"
+    },
+    {
+      "type": "VISITS",
+      "from": "Character",
+      "to": "Place",
+      "meaning": "常去关系"
+    },
+    {
+      "type": "WORKS_WITH",
+      "from": "Character",
+      "to": "Character|Group",
+      "meaning": "共事或合作关系"
+    },
+    {
+      "type": "MEMBER_OF",
+      "from": "Character",
+      "to": "Group",
+      "meaning": "成员归属关系"
+    },
+    {
+      "type": "ASSOCIATED_WITH",
+      "from": "Entity",
+      "to": "Entity",
+      "meaning": "宽泛关联，关系不够明确时使用"
+    }
+  ],
+  "props_guide": {
+    "common_relation_props": {
+      "confidence": "0.0~1.0，手工关系可信度",
+      "note": "关系备注，例如 first_meet_storyline",
+      "source": "建议固定 manual",
+      "updated_at": "由导入脚本自动写入"
+    },
+    "common_preference_props": {
+      "strength": "0.0~1.0，偏好强度"
+    }
+  },
+  "nodes": [
+    {
+      "id": "char_jokebear",
+      "name": "JokeBear",
+      "labels": [
+        "Character"
+      ],
+      "props": {
+        "alias": "自嘲熊",
+        "species": "bear",
+        "core_style": "self_mocking_and_cute"
+      }
+    },
+    {
+      "id": "char_friend_a",
+      "name": "FriendA",
+      "labels": [
+        "Character"
+      ],
+      "props": {
+        "alias": "你自定义角色名",
+        "species": "unknown"
+      }
+    },
+    {
+      "id": "place_home",
+      "name": "Home",
+      "labels": [
+        "Place"
+      ],
+      "props": {
+        "alias": "熊窝"
+      }
+    },
+    {
+      "id": "food_favorite_x",
+      "name": "FavoriteFoodX",
+      "labels": [
+        "Food"
+      ],
+      "props": {
+        "alias": "你自定义食物"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "from": "char_jokebear",
+      "to": "char_friend_a",
+      "type": "BEST_FRIEND_WITH",
+      "props": {
+        "confidence": 0.95,
+        "note": "core_friendship"
+      }
+    },
+    {
+      "from": "char_jokebear",
+      "to": "place_home",
+      "type": "LIVES_IN",
+      "props": {
+        "confidence": 0.9
+      }
+    },
+    {
+      "from": "char_jokebear",
+      "to": "food_favorite_x",
+      "type": "LIKES",
+      "props": {
+        "strength": 0.98,
+        "confidence": 0.9
+      }
+    }
+  ]
+}
