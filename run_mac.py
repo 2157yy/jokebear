@@ -6,12 +6,13 @@ import uuid
 
 # 导入记忆层模块
 from memory import JokeBearGraphStore, EntityExtractor, MemoryManager
+from memory.emotion_classifier import EmotionClassifier
 
 init(autoreset=True)
 
 # ================= 配置区域 =================
 # 改成你解压后的文件夹路径
-MODEL_PATH = "/Users/ljp/Documents/merged_jokebear_model"
+MODEL_PATH = "/Users/ljp/jokebear/merged_jokebear_model"
 
 # Neo4j 配置
 NEO4J_URI = "bolt://localhost:7687"
@@ -73,6 +74,9 @@ def main():
             print(Fore.YELLOW + f"记忆库连接失败：{e}\n将以无记忆模式运行")
             memory_manager = None
 
+    # 初始化独立情感模块（方案 B）
+    emotion_classifier = EmotionClassifier()
+
     print(Fore.YELLOW + "\n小熊：(从屏幕里探出头) 哇，是 Mac 的味道！找我干嘛？")
 
     conversation_history = []
@@ -92,6 +96,22 @@ def main():
             memory_context = memory_manager.retrieve_context(query, max_memories=3)
             if memory_context:
                 print(Fore.CYAN + f"[记忆] 想起：{memory_context[:100]}...")
+        
+        emotion_label = "平静"
+        emotion_intensity = 0.5
+        try:
+            emotion = emotion_classifier.predict(query)
+            emotion_label = emotion.get("name", "平静")
+            emotion_intensity = emotion.get("intensity", 0.5)
+        except Exception as e:
+            print(Fore.RED + f"[独立情感模块失败] {e}")
+            if memory_manager:
+                try:
+                    emotion = memory_manager.entity_extractor.extract_emotion(query)
+                    emotion_label = emotion.get("name", "平静")
+                    emotion_intensity = emotion.get("intensity", 0.5)
+                except Exception as fallback_e:
+                    print(Fore.RED + f"[fallback情感提取失败] {fallback_e}")
 
         # 构建 system prompt
         system_prompt = """你现在是"自嘲熊 (Joke Bear/自分ツッコミくま)"。外表是一只软萌白胖、线条简单的北极熊。
@@ -108,6 +128,8 @@ def main():
         # 如果有记忆上下文，加入 system prompt
         if memory_context:
             system_prompt += f"\n\n【用户信息】\n{memory_context}"
+            
+        system_prompt += f"\n【情感状态】{emotion_label}({emotion_intensity:.2f})"  ## 在 system prompt 中加入情感状态，供模型参考
 
         messages = [
             {"role": "system", "content": system_prompt},
@@ -133,7 +155,7 @@ def main():
         ]
         response = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
 
-        print(Fore.YELLOW + f"小熊：{response}")
+        print(Fore.YELLOW + f"自嘲熊：{response}")
 
         # 更新对话历史
         conversation_history.append({"role": "user", "content": query})

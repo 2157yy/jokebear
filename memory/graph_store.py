@@ -73,6 +73,10 @@ class JokeBearGraphStore:
                     'mentioned_count': 1,
                     'last_mentioned': datetime.now().isoformat()
                 }
+
+                # 统一情绪字段，避免 e.name / e.emotion 分裂
+                if entity_type == "EmotionState":
+                    base_props['emotion'] = entity_name
                 
                 # 添加额外属性
                 if 'sentiment' in entity:
@@ -104,14 +108,19 @@ class JokeBearGraphStore:
                 
                 # 创建用户与实体的关系
                 relation_type = entity.get('relation_type', 'MENTIONED')
+                relation_intensity = entity.get('intensity')
                 session.run(f"""
                     MATCH (u:User {{user_id: $user_id}})
                     MATCH (e:{entity_type} {{entity_id: $entity_id}})
                     MERGE (u)-[r:{relation_type}]->(e)
                     SET r.count = COALESCE(r.count, 0) + 1,
                         r.last_at = datetime(),
-                        r.conversation_id = $conversation_id
-                """, user_id=user_id, entity_id=entity_id, conversation_id=conversation_id)
+                        r.conversation_id = $conversation_id,
+                        r.intensity = CASE
+                            WHEN $relation_intensity IS NULL THEN r.intensity
+                            ELSE $relation_intensity
+                        END
+                """, user_id=user_id, entity_id=entity_id, conversation_id=conversation_id, relation_intensity=relation_intensity)
     
     def get_user_memories(
         self,
@@ -150,12 +159,13 @@ class JokeBearGraphStore:
                 # 获取当前情绪状态
                 result = session.run("""
                     MATCH (u:User {user_id: $user_id})-[r:FEELS]->(e:EmotionState)
-                    WHERE r.intensity > 0.5
+                    WITH e, r, COALESCE(r.intensity, e.intensity, 0.0) AS score
+                    WHERE score > 0.5
                     RETURN
-                        e.emotion as emotion,
-                        e.intensity as intensity,
+                        COALESCE(e.emotion, e.name) as emotion,
+                        score as intensity,
                         e.trigger as trigger
-                    ORDER BY r.intensity DESC
+                    ORDER BY intensity DESC
                     LIMIT $limit
                 """, user_id=user_id, limit=limit)
             else:
@@ -215,7 +225,8 @@ class JokeBearGraphStore:
         with self.driver.session() as session:
             session.run("""
                 MERGE (e:EmotionState {entity_id: $entity_id})
-                SET e.emotion = $emotion,
+                SET e.name = $emotion,
+                    e.emotion = $emotion,
                     e.intensity = $intensity,
                     e.trigger = $trigger
             """, entity_id=entity_id, emotion=emotion, intensity=intensity, trigger=trigger)

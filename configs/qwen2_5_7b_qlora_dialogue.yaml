@@ -1,0 +1,53 @@
+%cd /content/LLaMA-Factory
+
+import yaml
+
+# 定义配置字典
+config = {
+    # 模型参数
+    "model_name_or_path": "Qwen/Qwen2.5-7B-Instruct",
+    "template": "qwen",
+    "finetuning_type": "lora",
+    quantization_config: {
+        "load_in_4bit": True,
+        "bnb_4bit_compute_dtype": "float16",
+        "bnb_4bit_use_double_quant": True,
+        "bnb_4bit_quant_type": "nf4",
+    },
+    
+    # 数据集
+    "dataset": "jokebear",
+    
+    # 训练参数 (针对 A5000 优化)
+    "output_dir": "./saves/jokebear_7b_qlora_dialogue_v1",
+    "per_device_train_batch_size": 1,  # 小批量大小适合显存较小的 GPU
+    "gradient_accumulation_steps": 16,  # 累积梯度以模拟更大的批量大小
+    "learning_rate": 1.0e-4,        # 适当降低学习率以稳定训练
+    "num_train_epochs": 3.0,
+    "lr_scheduler_type": "cosine",
+    "warmup_ratio": 0.1,
+    
+    # 显存与精度保护
+    "fp16": False,                
+    "pure_bf16": True,          
+    "gradient_checkpointing": True,
+    
+    # 防卡死关键设置
+    "dataloader_num_workers": 4, # 单线程加载数据
+    "optim": "adamw_torch",      # 使用原生 PyTorch 优化器
+    
+    # 日志
+    "logging_steps": 5,
+    "save_steps": 350,      # 每 350 步保存一次模型，适合小数据集
+    "report_to": "none",
+    
+    # 覆盖默认行为
+    "do_train": True,
+    "overwrite_output_dir": False,
+}
+
+# 写入 yaml 文件
+with open("train_config.yaml", "w", encoding="utf-8") as f:
+    yaml.dump(config, f, sort_keys=False)
+
+print("配置文件 train_config.yaml 已生成！")
