@@ -77,8 +77,10 @@ class MemoryManager:
             记忆上下文字符串
         """
         # 获取相关记忆
-        recent = self.graph_store.get_user_memories(self.user_id, "relevant", limit=3)
-        positive = self.graph_store.get_user_memories(self.user_id, "positive", limit=2)
+        recent_limit = max(1, max_memories * 3 // 5)
+        positive_limit = max(1, max_memories - recent_limit)
+        recent = self.graph_store.get_user_memories(self.user_id, "relevant", limit=recent_limit)
+        positive = self.graph_store.get_user_memories(self.user_id, "positive", limit=positive_limit)
         
         # 构建记忆上下文
         context_parts = []
@@ -189,9 +191,7 @@ class MemoryManager:
     
     def clear_memories(self):
         """清除所有记忆（谨慎使用）"""
-        # 注意：这个方法需要在 graph_store 中实现对应的清除逻辑
-        # 暂时作为占位符
-        pass
+        raise NotImplementedError("clear_memories 尚未实现，需要在 graph_store 中添加对应的清除逻辑")
     
     def get_memory_summary(self) -> str:
         """

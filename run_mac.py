@@ -3,6 +3,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from colorama import init, Fore
 import os
 import uuid
+from dotenv import load_dotenv
+load_dotenv()
 
 # 导入记忆层模块
 from memory import JokeBearGraphStore, EntityExtractor, MemoryManager
@@ -12,12 +14,14 @@ init(autoreset=True)
 
 # ================= 配置区域 =================
 # 改成你解压后的文件夹路径
-MODEL_PATH = "/Users/ljp/jokebear/merged_jokebear_model"
+MODEL_PATH = os.environ.get("MODEL_PATH", "/Users/ljp/jokebear/merged_jokebear_model")
 
 # Neo4j 配置
-NEO4J_URI = "bolt://localhost:7687"
-NEO4J_USER = "neo4j"
-NEO4J_PASSWORD = "jokebear2024"
+NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
+NEO4J_USER = os.environ.get("NEO4J_USER", "neo4j")
+NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD")
+if not NEO4J_PASSWORD:
+      raise RuntimeError("请设置环境变量NEO4J_PASSWORD，或在 .env 文件中配置")
 
 # 用户 ID（可以改成你自己的 ID）
 USER_ID = "doubleL"
@@ -145,6 +149,7 @@ def main():
         generated_ids = model.generate(
             **model_inputs,
             max_new_tokens=512,
+            do_sample=True,
             temperature=0.7,
             top_p=0.9,
             repetition_penalty=1.1

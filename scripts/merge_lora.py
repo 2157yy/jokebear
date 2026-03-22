@@ -6,7 +6,7 @@ sys.argv = [
     "llamafactory-cli",
     "export",
     "--model_name_or_path", "Qwen/Qwen2.5-7B-Instruct", # 如果你训练的是7B，这里记得改成 7B
-    "--adapter_name_or_path", "./saves/jokebear_7b_qlora_dialogue_v1", # 你的训练结果路径
+    "--adapter_name_or_path", "./saves/jokebear_7b_qlora_v1", # 你的训练结果路径
     "--template", "qwen",
     "--finetuning_type", "lora",
     

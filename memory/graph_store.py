@@ -6,15 +6,19 @@ from neo4j import GraphDatabase
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 import hashlib
+import os
 
 
 class JokeBearGraphStore:
     """自嘲熊图数据库存储类"""
     
-    def __init__(self, uri: str = "bolt://localhost:7687", 
-                 user: str = "neo4j", 
-                 password: str = "jokebear2024"):
+    def __init__(self, uri: str = None,
+                 user: str = None,
+                 password: str = None):
         """初始化 Neo4j 连接"""
+        uri = uri or os.environ.get("NEO4J_URI", "bolt://localhost:7687")
+        user = user or os.environ.get("NEO4J_USER", "neo4j")
+        password = password or os.environ.get("NEO4J_PASSWORD", "jokebear2024")
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
         self._init_schema()
     
@@ -221,7 +225,7 @@ class JokeBearGraphStore:
     
     def add_emotion(self, user_id: str, emotion: str, intensity: float, trigger: str = ""):
         """添加用户情绪状态"""
-        entity_id = self._generate_entity_id("EmotionState", f"{emotion}_{datetime.now().strftime('%Y%m%d')}")
+        entity_id = self._generate_entity_id("EmotionState", emotion)
         with self.driver.session() as session:
             session.run("""
                 MERGE (e:EmotionState {entity_id: $entity_id})
